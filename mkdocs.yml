@@ -1,1 +1,42 @@
 site_name: FusionSuite documentation
+site_dir: public
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      baselevel: 1
+      toc_depth: 5
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - attr_list
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+
+theme:
+  name: material
+  features:
+    - navigation.top
+    - content.code.annotate # (1)
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: slate
+      primary: black
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: default
+      primary: black
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
