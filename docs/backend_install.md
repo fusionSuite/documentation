@@ -1,21 +1,26 @@
 
----
-Author: Maël  
-Date: 2022.01.14  
----
+This documentation has been made and tested for:  
 
-!!! note
-    This documentation has been made and tested for Debian 11 (Bullseye).  
-    Documentation for other distribution will come soon.
+- Debian 11 (Bullseye).  
+- MariaDB
+- Nginx
 
-## Package requirement:
+However other distributions, web server and database engine are compatible as well.  
+
+- Apache2
+- MySQL
+- PostgreSQL
+- SQLite
+
+## Package requirement
+
 
 ```console
-apt install php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server
+apt install php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server fcgiwrap
 ```
 
-???+ tip
-    To get FastCGI running for the nginx webservice, you will install the Debian package fcgiwrap
+???+ note
+    `fcgiwrap` seems to be a Debian specificity to get FastCGI running for the nginx webservice.
 
 ## MariaDB Configuration
 
@@ -71,7 +76,7 @@ FLUSH PRIVILEGES;
 ## Download FusionSuite backend
 
 ```console
-mkdir /var/www/fusionsuite
+mkdir -p /var/www/fusionsuite
 cd /var/www/fusionsuite
 git clone https://github.com/fusionSuite/backend.git
 ```
@@ -105,11 +110,34 @@ Then edit this part according your configuration:
 ]
 ```
 
+## Install dependencies and apply phinx configuration
+
+!!! warn
+    This part must be removed in the future because the tarball will be already prepare
+
+Install composer:
+```console
+apt install composer -y
+```
+
+Install dependencies
+```console
+cd /var/www/fusionsuite/backend
+composer install
+```
+
+Then apply phinx config with:
+```console
+./vendor/bin/phinx migrate
+```
+
 ## Nginx Configuration
 
 ### Disable default site
+
+The nginx example configuration can be deactivate with:
 ```console
-rm /etc/nginx/sites-available/default
+rm /etc/nginx/sites-enabled/default
 ```
 
 ### Create your own config file for FusionSuite
@@ -126,26 +154,60 @@ server {
   server_name _;
 
   location / {
-    try_files $uri $uri/ =404;
-  }
-
-  location ~ \.php$ {
-    include		snippets/fastcgi-php.conf;
-    fastcgi_pass	unix:/run/php/php7.4-fpm.sock;
-  }
-
-  location ~ ^/(status|ping)$ {
-    allow		127.0.0.1;
-    fastcgi_param	SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
-    include		fastcgi_params;
-    fastcgi_pass	unix:/run/php/php7.4-fpm.sock;
+    allow        127.0.0.1;
+    fastcgi_param    SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
+    include        fastcgi_params;
+    fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
   }
 }
 ```
 
-### Enable this configuration and test
+!!! note "TODO"
+    Add here an example for SSL
 
-```
+### Enable the configuration and restart NGINX
+
+Enable the configuration by making a symbolic link in `sites-enabled`.
+```console
 ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
+```
+
+Restart Nginx to apply your new configuration.
+```console
 systemctl restart nginx
 ```
+
+??? tip
+     It is also possible to just reload the configuration with:  
+     ```console
+     systemctl reload nginx
+     ```
+
+## Test and validation
+
+Now your backend should works.  
+
+The request on url: `http://my_server.my_domain.tld/` should answer something like this:
+```json
+{"status":"error","message":"Token not found."}
+```
+
+on: `http://my_server.my_domain.tld/ping`:  
+```console
+pong
+```
+
+on: `http://my_server.my_domain.tld/v1/status`:  
+```json
+{"connections":{"database":true}}
+```
+
+if the answer is:
+```json
+{"connections":{"database":false}}
+```
+
+Please check:
+
+- Your databases parameters in `/var/www/fusionsuite/backend/phinx.php`.  
+- MariaDB status with `systemctl status mariadb`

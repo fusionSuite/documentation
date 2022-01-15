@@ -1,5 +1,7 @@
 site_name: FusionSuite documentation
 site_dir: public
+repo_url: 'https://github.com/fusionSuite/documentation'
+copyright: Copyright © FusionSuite 2022
 
 markdown_extensions:
   - toc:
@@ -17,6 +19,23 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/solid/globe-americas
+      link: https:/fusionsuite.org/
+      name: Website
+    - icon: fontawesome/brands/github
+      link: https://github.com/fusionSuite
+      name: GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/FusionSuite
+      name: Twitter
+# TODO: Add icon for discord
+#    - icon: fontawesome/brands/slack
+#      link: https://discord.gg/Kj72FwAKTC
+#      name: Discord
+
 
 theme:
   name: material
