@@ -4,7 +4,7 @@
 
 Install virtualenv:
 ```console
-pip install virtualenv
+apt install virtualenv
 ```
 
 Clone the repository:
