@@ -1,17 +1,17 @@
-# Welcome to MkDocs
+# Overview
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+<p align="center">
+    <a href="https://fusionsuite.org/">
+        <img src="https://raw.githubusercontent.com/fusionSuite/fusionsuite.org/master/assets/img/logo_fusionsuite.png" alt="FusionSuite">
+    </a>
+    <br>
+    <strong>THE POWER OF IT SERVICE MANAGEMENT</strong>
+</p>
 
-## Commands
+## Contributing via GitHub
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+We welcome everyone to contribute to issue reports, suggest new features, and create pull requests.
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- [FusionSuite Backend](https://github.com/fusionSuite/backend)  
+- [FusionSuite Frontend](https://github.com/fusionSuite/frontend)  
+- [FusionSuite Documentation](https://github.com/fusionSuite/documentation)  
