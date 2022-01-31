@@ -25,7 +25,7 @@ source venv/bin/activate
 
 Install requirement for mkdocs
 ```console
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 Run development instance:
