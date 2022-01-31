@@ -7,92 +7,102 @@ This documentation has been made and tested for:
 
 ## Package requirement
 
-
+Make your system up to date and install the basics requirements.
 ```console
-apt-get update && apt-get upgrade -y
-apt-get install curl vim git -y 
+apt update && apt upgrade -y
+apt install curl vim git -y
 ```
 
-## NodeJs
+### NodeJs
 
+Let's install nodeJs:
 ```console
 curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
-apt-get update
-apt-get install nodejs -y
+apt update
+apt install nodejs -y
 ```
 
-## yarn
+### yarn
 
+Let's install yarn
 ```console
 curl -o- -L https://yarnpkg.com/install.sh | bash
 ```
 
- ## nginx
+### nginx
 
+In case you did not installed nginx for the backend already, install it now:
 ```console
-apt-get install nginx -y
+apt install nginx -y
 ```
 
-### Let's configure nginx
+## Prepare the files and compile the code
 
-### _create directory_
-
+In case you did not create this directory for the backend already, create it now:
 ```console
 mkdir /var/www/fusionsuite
 ```
 
- ### _Clone repository_
-
+Clone the repository in `/var/www/fusionsuite/`
 ```console
 git clone https://github.com/fusionSuite/frontend.git /var/www/fusionsuite/frontend
 ```
 
-### _install yarn_
-
+Install yarn:
 ```console
 cd /var/www/fusionsuite/frontend
 yarn install
 ```
 
-### _compile_
-
+Compile:
 ```console
 ./node_modules/.bin/ionic build --prod -- --aot=true --buildOptimizer=true --optimization=true --vendor-chunk=true
 ```
 
-### _update config.json to point to backend url_
-
+Update the file `config.json` to point on our backend url
 ```console
 vim /var/www/fusionsuite/frontend/www/config.json
 ```
 
-### _configure nginx to point to folder /var/www/fusionsuite/frontend/www/_
+!!! note "TODO"
+    Add an example here
 
-```console
-rm /etc/nginx/sites-enabled/default
-vim /etc/nginx/sites-available/fusionsuite.conf
-```
+## Nginx configuration
 
-example
+??? tip "Tip: remove the default nginx website"
+    If you want to disable the default nginx website just delete the file `/etc/nginx/sites-enabled/default`
+    ````console
+    rm /etc/nginx/sites-enabled/default
+    ```
+Configure nginx to point to folder `/var/www/fusionsuite/frontend/www/` with the following example:
 
-```nginx
-server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
+???+ example "/etc/nginx/sites-available/fusionsuite.conf"
+    ```nginx
+    server {
+      listen 80 default_server;
+      listen [::]:80 default_server;
 
-  root /var/www/fusionsuite/frontend/www;
-  index index.php index.html;
-  server_name _;
+      root /var/www/fusionsuite/frontend/www;
+      index index.php index.html;
+      server_name _;
 
-  location / {
-    allow        127.0.0.1;
-  }
-}
-```
+      location / {
+        allow        127.0.0.1;
+      }
+    }
+    ```
 
-### _enable the configuration and start NGINX_
+### Enable the configuration and start NGINX
 
+??? tip "Tip: Check your configuration"
+    You can check your configuration with the command `nginx -t`
+
+If it not already the case (the backend is configured in the same file), make your site enable.
 ```console
 ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
-service nginx start 
+```
+
+Then restart nginx
+```console
+systemctl restart nginx
 ```
