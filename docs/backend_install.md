@@ -153,6 +153,13 @@ server {
   index index.php index.html;
   server_name _;
 
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  add_header X-Frame-Options "SAMEORIGIN";
+  add_header Access-Control-Allow-Origin *;
+  add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
+  add_header Access-Control-Allow-Credentials true;
+  add_header Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
+
   location / {
     allow        127.0.0.1;
     fastcgi_param    SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
