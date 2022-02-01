@@ -135,7 +135,7 @@ Then apply phinx config with:
 
 ### Disable default site
 
-The nginx example configuration can be deactivate with:
+The nginx example configuration can be deactivated with:
 ```console
 rm /etc/nginx/sites-enabled/default
 ```
@@ -144,7 +144,7 @@ rm /etc/nginx/sites-enabled/default
 
 Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` with the following example.
 
-```nginx
+```nginx title="/etc/nginx/sites-available/fusionsuite.conf"
 server {
   listen            80 default_server;
   listen            [::]:80 default_server;
