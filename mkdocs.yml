@@ -36,26 +36,11 @@ extra:
 #      link: https://discord.gg/Kj72FwAKTC
 #      name: Discord
 
-
 theme:
   name: material
   features:
     - navigation.top
     - content.code.annotate # (1)
-  palette:
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: slate
-      primary: black
-      accent: red
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # Dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: default
-      primary: black
-      accent: red
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css

@@ -1,0 +1,19 @@
+:root {
+    --md-primary-fg-color: #68d3ff;
+    --md-primary-fg-color--light: #68d3ff;
+    --md-accent-fg-color: #68d3ff;
+    /* --md-default-fg-color--light: #68d3ff; */
+}
+
+h1 {
+    color: #68d3ff !important;
+    font-weight: 600 !important;
+}
+
+.md-grid {
+    max-width: 1600px; 
+}
+
+.md-search__form {
+    background-color: #3cc6ff !important;
+}
