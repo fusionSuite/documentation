@@ -135,7 +135,7 @@ Then apply phinx config with:
 
 ### Disable default site
 
-The nginx example configuration can be deactivate with:
+The nginx example configuration can be deactivated with:
 ```console
 rm /etc/nginx/sites-enabled/default
 ```
@@ -144,20 +144,26 @@ rm /etc/nginx/sites-enabled/default
 
 Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` with the following example.
 
-```nginx
+```nginx title="/etc/nginx/sites-available/fusionsuite.conf"
 server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
+  listen            80 default_server;
+  listen            [::]:80 default_server;
 
-  root /var/www/fusionsuite/backend/public;
-  index index.php index.html;
-  server_name _;
+  root              /var/www/fusionsuite/backend/public;
+  index             index.php index.html;
+  server_name       _;
 
   location / {
-    allow        127.0.0.1;
-    fastcgi_param    SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
-    include        fastcgi_params;
+    allow           127.0.0.1;
+    fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
+    include         fastcgi_params;
     fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
+    add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header      X-Frame-Options "SAMEORIGIN";
+    add_header      Access-Control-Allow-Origin *;
+    add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
+    add_header      Access-Control-Allow-Credentials true;
+    add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
   }
 }
 ```
