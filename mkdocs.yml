@@ -1,5 +1,9 @@
 site_name: FusionSuite documentation
+site_url: https://fusionsuite.org/documentation
+
+repo_name: fusionSuite/documentation
 repo_url: 'https://github.com/fusionSuite/documentation'
+
 copyright: Copyright © FusionSuite 2022
 
 markdown_extensions:
