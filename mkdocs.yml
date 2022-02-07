@@ -1,5 +1,4 @@
 site_name: FusionSuite documentation
-site_dir: public
 repo_url: 'https://github.com/fusionSuite/documentation'
 copyright: Copyright © FusionSuite 2022
 
@@ -26,7 +25,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/solid/globe-americas
-      link: https:/fusionsuite.org/
+      link: https://fusionsuite.org/
       name: Website
     - icon: fontawesome/brands/github
       link: https://github.com/fusionSuite
