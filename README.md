@@ -1,5 +1,7 @@
 
 
+Find the documentation [here](https://fusionsuite.org/documentation/)  
+
 ## Run mkdocs in dev mode
 
 Install virtualenv:

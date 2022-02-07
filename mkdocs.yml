@@ -29,20 +29,24 @@ extra:
       name: Website
     - icon: fontawesome/brands/github
       link: https://github.com/fusionSuite
-      name: GitHub
+      name: FusionSuite on GitHub
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/FusionSuite
-      name: Twitter
-# TODO: Add icon for discord
-#    - icon: fontawesome/brands/slack
-#      link: https://discord.gg/Kj72FwAKTC
-#      name: Discord
+      name: FusionSuite on Twitter
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/Kj72FwAKTC
+      name: FusionSuite on Discord
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UClK5zin1sdONo2_P2fVuFKg
+      name: FusionSuite on Youtube
 
 theme:
   name: material
   features:
     - navigation.top
     - content.code.annotate # (1)
+  logo: assets/favicon.png
+  favicon: assets/favicon.png
 
 extra_css:
   - stylesheets/extra.css
