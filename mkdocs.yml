@@ -45,6 +45,8 @@ theme:
   features:
     - navigation.top
     - content.code.annotate # (1)
+  logo: assets/favicon.png
+  favicon: assets/favicon.png
 
 extra_css:
   - stylesheets/extra.css
