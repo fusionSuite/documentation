@@ -1,6 +1,9 @@
 site_name: FusionSuite documentation
-site_dir: public
+site_url: https://fusionsuite.org/documentation
+
+repo_name: fusionSuite/documentation
 repo_url: 'https://github.com/fusionSuite/documentation'
+
 copyright: Copyright © FusionSuite 2022
 
 markdown_extensions:
@@ -19,43 +22,35 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra:
   social:
     - icon: fontawesome/solid/globe-americas
-      link: https:/fusionsuite.org/
+      link: https://fusionsuite.org/
       name: Website
     - icon: fontawesome/brands/github
       link: https://github.com/fusionSuite
-      name: GitHub
+      name: FusionSuite on GitHub
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/FusionSuite
-      name: Twitter
-# TODO: Add icon for discord
-#    - icon: fontawesome/brands/slack
-#      link: https://discord.gg/Kj72FwAKTC
-#      name: Discord
-
+      name: FusionSuite on Twitter
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/Kj72FwAKTC
+      name: FusionSuite on Discord
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UClK5zin1sdONo2_P2fVuFKg
+      name: FusionSuite on Youtube
 
 theme:
   name: material
   features:
     - navigation.top
     - content.code.annotate # (1)
-  palette:
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: slate
-      primary: black
-      accent: red
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # Dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: default
-      primary: black
-      accent: red
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+  logo: assets/favicon.png
+  favicon: assets/favicon.png
+
+extra_css:
+  - stylesheets/extra.css
