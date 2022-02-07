@@ -26,7 +26,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/solid/globe-americas
-      link: https:/fusionsuite.org/
+      link: https://fusionsuite.org/
       name: Website
     - icon: fontawesome/brands/github
       link: https://github.com/fusionSuite
