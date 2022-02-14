@@ -112,7 +112,7 @@ Then edit this part according your configuration:
 
 ## Install dependencies and apply phinx configuration
 
-!!! warn
+!!! warning
     This part must be removed in the future because the tarball will be already prepare
 
 Install composer:

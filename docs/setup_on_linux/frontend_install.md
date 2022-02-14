@@ -71,7 +71,7 @@ vim /var/www/fusionsuite/frontend/www/config.json
 
 ??? tip "Tip: remove the default nginx website"
     If you want to disable the default nginx website just delete the file `/etc/nginx/sites-enabled/default`
-    ````console
+    ```console
     rm /etc/nginx/sites-enabled/default
     ```
 Configure nginx to point to folder `/var/www/fusionsuite/frontend/www/` with the following example:
