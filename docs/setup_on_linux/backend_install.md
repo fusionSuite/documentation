@@ -164,6 +164,7 @@ server {
     add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
     add_header      Access-Control-Allow-Credentials true;
     add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
+    add_header      Access-Control-Expose-Headers 'X-Total-Count,Content-Range,Link';
   }
 }
 ```
