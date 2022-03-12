@@ -225,7 +225,7 @@ With the many configurations created, it can be cool to switch easily between th
 For that, run the command:
 
 ```
-./bin/cli installenv:switch
+./bin/cli env:switch
 ```
 
 It will display all your configurations and ask to choose the configuration to apply to the current configuration.
@@ -254,7 +254,7 @@ It will display all your configurations and ask to choose the configuration to a
 
 Of course, it's possible to script it with the option *-n xxx*.
 
-Use the command `./bin/cli installenv:switch --help` to hav all information.
+Use the command `./bin/cli env:switch --help` to hav all information.
 
 #### Delete a configuration
 
