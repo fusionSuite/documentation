@@ -1,12 +1,12 @@
 # Backend installation
 
-This documentation has been made and tested for:  
+This documentation has been made and tested for:
 
-- Debian 11 (Bullseye).  
+- Debian 11 (Bullseye)
 - MariaDB
 - Nginx
 
-However other distributions, web server and database engine are compatible as well.  
+However other distributions, web server and database engine are compatible as well:
 
 - Apache2
 - MySQL
@@ -14,7 +14,6 @@ However other distributions, web server and database engine are compatible as we
 - SQLite
 
 ## Package requirement
-
 
 ```console
 apt install php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server fcgiwrap
@@ -26,6 +25,7 @@ apt install php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server fcgiwrap
 ## MariaDB Configuration
 
 ### Let's secure a little bit MariaDB
+
 ```console
 mysql_secure_installation
 ```
@@ -67,6 +67,7 @@ mysql -u root -p
 ### Create a database and user for FusionSuite.
 
 Please adapt with your personals credentials.
+
 ```mysql
 CREATE DATABASE fusionsuite_db;
 CREATE USER 'fusionsuite_user'@'localhost' IDENTIFIED BY 'StrongDBPassword';
@@ -86,19 +87,21 @@ git clone https://github.com/fusionSuite/backend.git
 
 Edit the file: `/var/www/fusionsuite/backend/phinx.php`
 
-Modify the line 27 according your needs.  
-For production, replace:  
+Modify the line 27 according your needs.
+For production, replace:
 
 ```php
 'default_environment' => 'development',
 ```
 
-by:  
+by:
+
 ```php
 'default_environment' => 'production',
 ```
 
-Then edit this part according your configuration:  
+Then edit this part according your configuration:
+
 ```php
 'production' => [
     'adapter' => 'mysql',
@@ -117,17 +120,20 @@ Then edit this part according your configuration:
     This part must be removed in the future because the tarball will be already prepare
 
 Install composer:
+
 ```console
 apt install composer -y
 ```
 
-Install dependencies
+Install dependencies:
+
 ```console
 cd /var/www/fusionsuite/backend
 composer install
 ```
 
 Then apply phinx config with:
+
 ```console
 ./vendor/bin/phinx migrate
 ```
@@ -137,13 +143,14 @@ Then apply phinx config with:
 ### Disable default site
 
 The nginx example configuration can be deactivated with:
+
 ```console
 rm /etc/nginx/sites-enabled/default
 ```
 
 ### Create your own config file for FusionSuite
 
-Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` with the following example.
+Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` with the following example:
 
 ```nginx title="/etc/nginx/sites-available/fusionsuite.conf"
 server {
@@ -175,47 +182,54 @@ server {
 
 ### Enable the configuration and restart NGINX
 
-Enable the configuration by making a symbolic link in `sites-enabled`.
+Enable the configuration by making a symbolic link in `sites-enabled`:
+
 ```console
 ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
 ```
 
 Restart Nginx to apply your new configuration.
+
 ```console
 systemctl restart nginx
 ```
 
 ??? tip
-     It is also possible to just reload the configuration with:  
+     It is also possible to just reload the configuration with:
+
      ```console
      systemctl reload nginx
      ```
 
 ## Test and validation
 
-Now your backend should works.  
+Now your backend should works.
 
 The request on url: `http://my_server.my_domain.tld/` should answer something like this:
+
 ```json
 {"status":"error","message":"Token not found."}
 ```
 
-on: `http://my_server.my_domain.tld/ping`:  
+on: `http://my_server.my_domain.tld/ping`:
+
 ```console
 pong
 ```
 
-on: `http://my_server.my_domain.tld/v1/status`:  
+on: `http://my_server.my_domain.tld/v1/status`:
+
 ```json
 {"connections":{"database":true}}
 ```
 
 if the answer is:
+
 ```json
 {"connections":{"database":false}}
 ```
 
 Please check:
 
-- Your databases parameters in `/var/www/fusionsuite/backend/phinx.php`.  
+- your database configuration in `/var/www/fusionsuite/backend/phinx.php`
 - MariaDB status with `systemctl status mariadb`
