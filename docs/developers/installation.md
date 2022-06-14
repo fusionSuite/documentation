@@ -35,7 +35,7 @@ privileges):
 
 !!! warning
     Please note the instructions in this section don't secure the access to
-    MariaDB. If you need it, please follow [the instructions for administrators](../administration_tasks/linux_step_by_step/backend_install.md).
+    MariaDB. If you need it, please follow [the instructions for administrators](../administrators/installation/backend.md#configure-mariadb).
 
 Login to MariaDB with the `root` user (it has no passwords by default):
 
