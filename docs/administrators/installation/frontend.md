@@ -3,120 +3,165 @@
 This documentation has been made and tested for:
 
 - Debian 11 (Bullseye)
-- Node.js
-- yarn
 - Nginx
 
-## Package requirement
+Other systems should work as well, but you may have to adapt some commands.
 
-Make your system up to date and install the basics requirements:
+## Conventions used in this document
+
+- commands starting by `#` must be executed by the `root` user;
+- commands starting by `$` must be executed by your normal user.
+
+## Install the package dependencies
+
+Install the dependencies with the following command:
 
 ```console
-apt update && apt upgrade -y
-apt install curl vim git -y
+# apt install curl nginx
 ```
 
-### Node.js
-
-Let's install Node.js:
+If you want to install FusionSuite with Git (recommended method), you should
+install it as well:
 
 ```console
-curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
-apt update
-apt install nodejs -y
+# apt install git
 ```
 
-### yarn
+## Install Node.js and Yarn
 
-Let's install yarn:
+Install [`nvm`](https://github.com/nvm-sh/nvm) so you can easily install and
+manage different versions of Node.js:
 
 ```console
-curl -o- -L https://yarnpkg.com/install.sh | bash
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+$ source ~/.bashrc
+$ nvm install 16
 ```
 
-### nginx
+!!!tip
+    The last command installs the version 16 of Node.js. You can replace `16`
+    by `node` to get the latest version, or by a specific version if you need
+    it.
 
-In case you did not installed nginx for the backend already, install it now:
+Then, install Yarn:
 
 ```console
-apt install nginx -y
+$ npm install --location=global yarn
 ```
 
 ## Prepare the files and compile the code
 
-In case you did not create this directory for the backend already, create it now:
+Clone the repository in your home directory (this can be done as your normal
+user):
 
 ```console
-mkdir /var/www/fusionsuite
+$ git clone https://github.com/fusionSuite/frontend.git ~/fusionsuite-frontend
 ```
 
-Clone the repository in `/var/www/fusionsuite/`:
+??? tip "Not using Git?"
+    Instead of using Git, you may prefer to get FusionSuite via an archive:
 
-```console
-git clone https://github.com/fusionSuite/frontend.git /var/www/fusionsuite/frontend
-```
-
-Install yarn:
-
-```console
-cd /var/www/fusionsuite/frontend
-yarn install
-```
-
-Compile:
-
-```console
-./node_modules/.bin/ionic build --prod -- --aot=true --buildOptimizer=true --optimization=true --vendor-chunk=true
-```
-
-Update the file `config.json` to point on our backend url:
-
-```console
-vim /var/www/fusionsuite/frontend/www/config.json
-```
-
-!!! note "TODO"
-    Add an example here
-
-## Nginx configuration
-
-??? tip "Tip: remove the default nginx website"
-    If you want to disable the default nginx website just delete the file `/etc/nginx/sites-enabled/default`
     ```console
-    rm /etc/nginx/sites-enabled/default
+    $ curl -L --output fusionsuite.tar.gz https://github.com/fusionSuite/frontend/archive/refs/heads/master.tar.gz
+    $ tar xzf fusionsuite.tar.gz
+    $ mv frontend-master/ ~/fusionsuite-frontend
     ```
 
-Configure nginx to point to folder `/var/www/fusionsuite/frontend/www/` with the following example:
+Install the dependencies with Yarn:
 
-???+ example "/etc/nginx/sites-available/fusionsuite.conf"
+```console
+$ cd ~/fusionsuite-frontend
+$ yarn install
+```
+
+And compile the frontend:
+
+```console
+$ ./node_modules/.bin/ionic build --prod -- --aot=true --buildOptimizer=true --optimization=true --vendor-chunk=true
+```
+
+The command should have compiled the frontend to the `www/` directory.
+
+We now want the webserver to serve these files. Please note the following
+commands are executed as the `root` user.
+
+In case you did not create this directory for the backend yet, create it now:
+
+```console
+# mkdir /var/www/fusionsuite
+```
+
+And move the compiled files to this directory:
+
+```
+# mv ~your-user/fusionsuite-frontend/www /var/www/fusionsuite/frontend
+```
+
+Update the file `config.json` to point to the backend URL:
+
+???+ note "/var/www/fusionsuite/frontend/config.json"
+    ```json
+    {
+        "backendUrl": "http://fusionsuite-backend.example.com"
+    }
+    ```
+
+And don't forget to set the correct permissions on the files:
+
+```console
+# chown -R www-data:www-data /var/www/fusionsuite
+```
+
+## Configure Nginx
+
+Edit the file `/etc/nginx/sites-available/fusionsuite.conf` by adapting the
+following example (especially the `server_name` directive):
+
+???+ note "/etc/nginx/sites-available/fusionsuite.conf"
     ```nginx
     server {
-      listen 80 default_server;
-      listen [::]:80 default_server;
+      listen 80;
+      listen [::]:80;
 
-      root /var/www/fusionsuite/frontend/www;
-      index index.php index.html;
-      server_name _;
+      root /var/www/fusionsuite/frontend;
+      index index.html;
+      server_name fusionsuite.example.com;
 
       location / {
-        allow        127.0.0.1;
+        try_files $uri $uri/ /index.html =404;
       }
     }
     ```
 
-### Enable the configuration and start NGINX
+!!! tip
+    If you already have a block for the backend, you can put this one before or
+    after, or you can create a different file under `/etc/nginx/sites-available`.
 
-??? tip "Tip: Check your configuration"
-    You can check your configuration with the command `nginx -t`
+!!! tip
+    You can check your configuration is correct with the command `nginx -t`.
 
-If it not already the case (the backend is configured in the same file), make your site enable:
-
-```console
-ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
-```
-
-Then restart nginx:
+If it's not already the case, enable the configuration file:
 
 ```console
-systemctl restart nginx
+# ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
 ```
+
+Then reload Nginx:
+
+```console
+# systemctl reload nginx
+```
+
+## Test and validate
+
+Now, the frontend should be accessible at the URL you've configured in Nginx
+(at least if your DNS is correctly configured!)
+
+You can open your browser at `http://fusionsuite.example.com` and verify
+FusionSuite works.
+
+If the connection to the backend works, you should see a bunch of types in the
+menu on the left.
+
+If the interface is displayed, but the menu is empty, you should verify the
+`backendUrl` value in the file `/var/www/fusionsuite/frontend/config.json`.
