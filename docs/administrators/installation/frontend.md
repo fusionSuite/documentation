@@ -1,3 +1,5 @@
+# Frontend installation
+
 This documentation has been made and tested for:  
 
 - Debian 11 (Bullseye).  
