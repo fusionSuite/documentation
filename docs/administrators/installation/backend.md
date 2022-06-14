@@ -6,28 +6,36 @@ This documentation has been made and tested for:
 - MariaDB
 - Nginx
 
-However other distributions, web server and database engine are compatible as well:
+Other systems should work as well, but you may have to adapt some commands.
 
-- Apache2
-- MySQL
-- PostgreSQL
-- SQLite
+FusionSuite also works and is tested with MySQL and PostgreSQL databases.
 
-## Package requirement
+## Conventions used in this document
+
+- commands starting by `#` must be executed by the `root` user;
+- commands starting by `$` must be executed by your normal user.
+
+## Install the package dependencies
+
+Install the dependencies with the following command:
 
 ```console
-apt install php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server fcgiwrap
+# apt install curl composer php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server
 ```
 
-???+ note
-    `fcgiwrap` seems to be a Debian specificity to get FastCGI running for the nginx webservice.
-
-## MariaDB Configuration
-
-### Let's secure a little bit MariaDB
+If you want to install FusionSuite with Git (recommended method), you should
+install it as well:
 
 ```console
-mysql_secure_installation
+# apt install git
+```
+
+## Configure MariaDB
+
+Let's start by securing MariaDB a little bit:
+
+```console
+# mariadb-secure-installation
 ```
 
 ??? example "Output example "
@@ -41,7 +49,7 @@ mysql_secure_installation
 
     Enter current password for root (enter for none):
 
-    Set root password? [Y/n]
+    Set root password? [Y/n] Y
     New password:
     Re-enter new password:
     Password updated successfully!
@@ -58,178 +66,148 @@ mysql_secure_installation
     [...]
     ```
 
-### Login to mariadb as root.
+Login to MariaDB as root (with the password you've just set):
 
 ```console
-mysql -u root -p
+# mariadb -u root -p
 ```
 
-### Create a database and user for FusionSuite.
-
-Please adapt with your personals credentials.
+Then, create a database and a user for FusionSuite (you must adapt the commands
+with your own credentials):
 
 ```mysql
-CREATE DATABASE fusionsuite_db;
+CREATE DATABASE fusionsuite_production;
 CREATE USER 'fusionsuite_user'@'localhost' IDENTIFIED BY 'StrongDBPassword';
-GRANT ALL PRIVILEGES ON fusionsuite_db.* TO 'fusionsuite_user'@'localhost';
+GRANT ALL PRIVILEGES ON fusionsuite_production.* TO 'fusionsuite_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Download FusionSuite backend
+## Install and configure the backend
+
+Clone the backend repository at a location where the `www-data` user has access
+(e.g. `/var/www/fusionsuite`):
 
 ```console
-mkdir -p /var/www/fusionsuite
-cd /var/www/fusionsuite
-git clone https://github.com/fusionSuite/backend.git
+# mkdir /var/www/fusionsuite
+# git clone https://github.com/fusionSuite/backend.git /var/www/fusionsuite/backend
+# chown -R www-data:www-data /var/www/fusionsuite
 ```
 
-## Configure phinx with your mariadb parameters
+??? tip "Not using Git?"
+    Instead of using Git, you may prefer to deploy FusionSuite via an archive:
 
-Edit the file: `/var/www/fusionsuite/backend/phinx.php`
+    ```console
+    # mkdir /var/www/fusionsuite
+    # curl -L --output fusionsuite.tar.gz https://github.com/fusionSuite/backend/archive/refs/heads/master.tar.gz
+    # tar xzf fusionsuite.tar.gz
+    # mv backend-master/ /var/www/fusionsuite/backend
+    # chown -R www-data:www-data /var/www/fusionsuite
+    ```
 
-Modify the line 27 according your needs.
-For production, replace:
+!!! info
+    The next commands are executed by the `www-data` user to make sure that all
+    files are accessible to the user who run the webserver.
 
-```php
-'default_environment' => 'development',
-```
-
-by:
-
-```php
-'default_environment' => 'production',
-```
-
-Then edit this part according your configuration:
-
-```php
-'production' => [
-    'adapter' => 'mysql',
-    'host' => 'localhost',
-    'name' => 'fusionsuite_db',
-    'user' => 'fusionsuite_user',
-    'pass' => '',
-    'port' => '3306',
-    'charset' => 'utf8',
-]
-```
-
-## Install dependencies and apply phinx configuration
-
-!!! warning
-    This part must be removed in the future because the tarball will be already prepare
-
-Install composer:
+In the `backend/` directory, install the composer dependencies:
 
 ```console
-apt install composer -y
+# cd /var/www/fusionsuite/backend
+# sudo -u www-data composer install
 ```
 
-Install dependencies:
+Create an environment configuration file for production:
 
 ```console
-cd /var/www/fusionsuite/backend
-composer install
+# sudo -u www-data ./bin/cli env:create -c \
+    -n production \
+    -t MariaDB \
+    -H localhost \
+    -d fusionsuite_production \
+    -u fusionsuite_user \
+    -p StrongDBPassword \
+    -P 3306
 ```
 
-Then apply phinx config with:
+Finally, setup the database:
 
 ```console
-./vendor/bin/phinx migrate
+# sudo -u www-data ./bin/cli install
 ```
 
-## Nginx Configuration
+## Configure Nginx
 
-### Disable default site
+Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` by
+adapting the following example (especially the `server_name` directive):
 
-The nginx example configuration can be deactivated with:
+???+ note "/etc/nginx/sites-available/fusionsuite.conf"
+    ```nginx
+    server {
+      listen            80;
+      listen            [::]:80;
+
+      root              /var/www/fusionsuite/backend/public;
+      index             index.php index.html;
+      server_name       fusionsuite-backend.example.com;
+
+      location / {
+        fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
+        include         fastcgi_params;
+        fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
+
+        add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header      X-Frame-Options "SAMEORIGIN";
+        add_header      Access-Control-Allow-Origin *;
+        add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
+        add_header      Access-Control-Allow-Credentials true;
+        add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
+        add_header      Access-Control-Expose-Headers 'X-Total-Count,Content-Range,Link';
+      }
+    }
+    ```
+
+!!! tip
+    You can check your configuration is correct with the command `nginx -t`.
+
+Enable the configuration by making a symbolic link under `/etc/nginx/sites-enabled/`
+ and reload Nginx to apply the configuration:
 
 ```console
-rm /etc/nginx/sites-enabled/default
+# ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
+# systemctl reload nginx
 ```
 
-### Create your own config file for FusionSuite
+## Test and validate
 
-Create and edit the file `/etc/nginx/sites-available/fusionsuite.conf` with the following example:
+Now, your backend should be accessible at the URL you've configured in Nginx
+(at least if your DNS is correctly configured!)
 
-```nginx title="/etc/nginx/sites-available/fusionsuite.conf"
-server {
-  listen            80 default_server;
-  listen            [::]:80 default_server;
-
-  root              /var/www/fusionsuite/backend/public;
-  index             index.php index.html;
-  server_name       _;
-
-  location / {
-    allow           127.0.0.1;
-    fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
-    include         fastcgi_params;
-    fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
-    add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header      X-Frame-Options "SAMEORIGIN";
-    add_header      Access-Control-Allow-Origin *;
-    add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
-    add_header      Access-Control-Allow-Credentials true;
-    add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
-    add_header      Access-Control-Expose-Headers 'X-Total-Count,Content-Range,Link';
-  }
-}
-```
-
-!!! note "TODO"
-    Add here an example for SSL
-
-### Enable the configuration and restart NGINX
-
-Enable the configuration by making a symbolic link in `sites-enabled`:
-
-```console
-ln -s /etc/nginx/sites-available/fusionsuite.conf /etc/nginx/sites-enabled/fusionsuite.conf
-```
-
-Restart Nginx to apply your new configuration.
-
-```console
-systemctl restart nginx
-```
-
-??? tip
-     It is also possible to just reload the configuration with:
-
-     ```console
-     systemctl reload nginx
-     ```
-
-## Test and validation
-
-Now your backend should works.
-
-The request on url: `http://my_server.my_domain.tld/` should answer something like this:
+The request to the URL `http://fusionsuite-backend.example.com` should answer
+something like this:
 
 ```json
 {"status":"error","message":"Token not found."}
 ```
 
-on: `http://my_server.my_domain.tld/ping`:
+at `http://fusionsuite-backend.example.com/ping`:
 
 ```console
 pong
 ```
 
-on: `http://my_server.my_domain.tld/v1/status`:
+at `http://fusionsuite-backend.example.com/v1/status`:
 
 ```json
 {"connections":{"database":true}}
 ```
 
-if the answer is:
+!!!tip
+    If the answer is:
 
-```json
-{"connections":{"database":false}}
-```
+    ```json
+    {"connections":{"database":false}}
+    ```
 
-Please check:
+    Please check:
 
-- your database configuration in `/var/www/fusionsuite/backend/phinx.php`
-- MariaDB status with `systemctl status mariadb`
+    - your database configuration in `/var/www/fusionsuite/backend/config/current/database.php`
+    - the MariaDB status and logs with `systemctl status mariadb` and `journalctl -u mariadb`
