@@ -24,8 +24,7 @@ FusionSuite also works and is tested with MySQL and PostgreSQL databases.
 
 ## Install the package dependencies
 
-Install dependencies with the following command (it should require `root`
-privileges):
+Install the dependencies with the following command:
 
 ```console
 # apt install git curl composer php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server
@@ -35,12 +34,12 @@ privileges):
 
 !!! warning
     Please note the instructions in this section don't secure the access to
-    MariaDB. If you need it, please follow [the instructions for administrators](../administration_tasks/linux_step_by_step/backend_install.md).
+    MariaDB. If you need it, please follow [the instructions for administrators](../administrators/installation/backend.md#configure-mariadb).
 
 Login to MariaDB with the `root` user (it has no passwords by default):
 
 ```console
-# mysql -u root
+# mariadb -u root
 ```
 
 In this shell, create a new database for FusionSuite. The following commands
@@ -56,8 +55,8 @@ FLUSH PRIVILEGES;
 
 ## Install and configure the backend
 
-Clone the backend repository to some place you and the `www-data` user have
-access (e.g. `/var/www/fusionsuite`):
+Clone the backend repository at a location where you and the `www-data` user
+have access (e.g. `/var/www/fusionsuite`):
 
 ```console
 # mkdir /var/www/fusionsuite
@@ -101,30 +100,34 @@ $ ./bin/cli install
 You now have to configure Nginx to serve the backend. Create a new file named
 `/etc/nginx/sites-available/fusionsuite.conf`:
 
-```nginx title="/etc/nginx/sites-available/fusionsuite.conf"
-server {
-    listen 80;
-    listen [::]:80;
+???+ note "/etc/nginx/sites-available/fusionsuite.conf"
+    ```nginx
+    server {
+        listen 80;
+        listen [::]:80;
 
-    server_name fusion-backend.localhost;
-    root /var/www/fusionsuite/backend/public;
-    index index.html index.php;
+        server_name fusion-backend.localhost;
+        root /var/www/fusionsuite/backend/public;
+        index index.html index.php;
 
-    location / {
-        fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
-        include         fastcgi_params;
-        fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
+        location / {
+            fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
+            include         fastcgi_params;
+            fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
 
-        add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-        add_header      X-Frame-Options "SAMEORIGIN";
-        add_header      Access-Control-Allow-Origin *;
-        add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
-        add_header      Access-Control-Allow-Credentials true;
-        add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
-        add_header      Access-Control-Expose-Headers 'X-Total-Count,Content-Range,Link';
+            add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+            add_header      X-Frame-Options "SAMEORIGIN";
+            add_header      Access-Control-Allow-Origin *;
+            add_header      Access-Control-Allow-Methods 'GET, POST, OPTIONS, PUT, DELETE';
+            add_header      Access-Control-Allow-Credentials true;
+            add_header      Access-Control-Allow-Headers 'Origin,Content-Type,Accept,Authorization,Cache-Control,Pragma,Expires';
+            add_header      Access-Control-Expose-Headers 'X-Total-Count,Content-Range,Link';
+        }
     }
-}
-```
+    ```
+
+!!! tip
+    You can check your configuration is correct with the command `nginx -t`.
 
 Then, enable this configuration:
 
@@ -150,17 +153,19 @@ Clone the frontend repository next to the backend repository:
 $ git clone https://github.com/fusionSuite/frontend.git /var/www/fusionsuite/frontend
 ```
 
-Install `nvm` so you can easily install and manage different versions of
-Node.js:
+Install [`nvm`](https://github.com/nvm-sh/nvm) so you can easily install and
+manage different versions of Node.js:
 
 ```console
-$ curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 $ source ~/.bashrc
-$ nvm install node
+$ nvm install 16
 ```
 
-The last command installs the latest version of Node.js. You can replace `node`
-by a specific version if you need it.
+!!!tip
+    The last command installs the version 16 of Node.js. You can replace `16`
+    by `node` to get the latest version, or by a specific version if you need
+    it.
 
 Then, install Yarn:
 
@@ -178,11 +183,12 @@ $ yarn install
 Edit the `src/config.json` file and change the `backendUrl` value with your
 backend endpoint:
 
-```json title="/var/www/fusionsuite/frontend/src/config.json"
-{
-  "backendUrl": "http://fusion-backend.localhost"
-}
-```
+???+ note "/var/www/fusionsuite/frontend/src/config.json"
+    ```json
+    {
+      "backendUrl": "http://fusion-backend.localhost"
+    }
+    ```
 
 Finally, start the frontend:
 

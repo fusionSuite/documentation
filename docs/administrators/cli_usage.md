@@ -1,4 +1,4 @@
-# Installation - CLI
+# CLI usage
 
 ## Introduction
 
