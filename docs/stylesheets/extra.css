@@ -17,3 +17,8 @@ h1 {
 .md-search__form {
     background-color: #3cc6ff !important;
 }
+
+.md-typeset abbr:not([title]) {
+    border-bottom: none;
+    cursor: default;
+}
