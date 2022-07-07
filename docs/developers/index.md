@@ -14,8 +14,6 @@ provides a REST API which is used by the frontend.
 Three databases are supported by the backend: MySQL, MariaDB and PostgreSQL.
 
 The frontend is written in TypeScript. It uses the framework [Angular](https://angular.io/).
-For cross-platform compatibilities, it also uses [Ionic](https://ionicframework.com/) (UI layer)
-and [Capacitor](https://capacitorjs.com/) (API layer).
 
 There are tests mainly for the REST API, but there are some for the frontend as
 well.
