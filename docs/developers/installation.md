@@ -103,10 +103,10 @@ You now have to configure Nginx to serve the backend. Create a new file named
 ???+ note "/etc/nginx/sites-available/fusionsuite.conf"
     ```nginx
     server {
-        listen 80;
-        listen [::]:80;
+        listen 8000;
+        listen [::]:8000;
 
-        server_name fusion-backend.localhost;
+        server_name localhost;
         root /var/www/fusionsuite/backend/public;
         index index.html index.php;
 
@@ -126,6 +126,11 @@ You now have to configure Nginx to serve the backend. Create a new file named
     }
     ```
 
+!!! info
+    By default, in development, the frontend expects to find the backend at
+    `localhost:8000`. It is also possible to specify a custom URL for the
+    backend, it will be explained how below.
+
 !!! tip
     You can check your configuration is correct with the command `nginx -t`.
 
@@ -136,9 +141,9 @@ Then, enable this configuration:
 # systemctl reload nginx
 ```
 
-The backend should now be accessible at [fusion-backend.localhost](http://fusion-backend.localhost).
+The backend should now be accessible at [localhost:8000](http://localhost:8000).
 
-You can check the database is correctly configured at [fusion-backend.localhost/v1/status](http://fusion-backend.localhost/v1/status).
+You can check the database is correctly configured at [localhost:8000/v1/status](http://localhost:8000/v1/status).
 If it’s correct, it will return the following Json:
 
 ```json
@@ -177,25 +182,26 @@ Install the Node dependencies:
 
 ```console
 $ cd /var/www/fusionsuite/frontend
-$ yarn install
+$ make install
 ```
 
-Edit the `src/config.json` file and change the `backendUrl` value with your
-backend endpoint:
+!!! info
+    If you've configured the backend at a different location than `localhost:8000`,
+    create a `src/config.json` file:
 
-???+ note "/var/www/fusionsuite/frontend/src/config.json"
-    ```json
-    {
-      "backendUrl": "http://fusion-backend.localhost"
-    }
+    ```console
+    $ cp src/config.sample.json src/config.json
     ```
+
+    And adapt the `backendUrl` value.
 
 Finally, start the frontend:
 
 ```console
-$ ./node_modules/.bin/ionic serve
+$ make start
 ```
 
-When it's ready, it should open your browser at [localhost:8100](http://localhost:8100).
+When it's ready, the frontend should be accessible at [localhost:4200](http://localhost:4200).
 
-If everything is fine, you should see a bunch of types in the menu on the left.
+If everything is fine, you should see a login form. The default credentials
+are: `admin` / `admin`.

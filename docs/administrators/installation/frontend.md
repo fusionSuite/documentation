@@ -71,16 +71,17 @@ Install the dependencies with Yarn:
 
 ```console
 $ cd ~/fusionsuite-frontend
-$ yarn install
+$ make install
 ```
 
 And compile the frontend:
 
 ```console
-$ ./node_modules/.bin/ionic build --prod -- --aot=true --buildOptimizer=true --optimization=true --vendor-chunk=true
+$ make build
 ```
 
-The command should have compiled the frontend to the `www/` directory.
+The command should have compiled the frontend to the `dist/frontend/` directory.
+You can choose either the English version (`en-US`) or French version (`fr`).
 
 We now want the webserver to serve these files. Please note the following
 commands are executed as the `root` user.
@@ -91,20 +92,11 @@ In case you did not create this directory for the backend yet, create it now:
 # mkdir /var/www/fusionsuite
 ```
 
-And move the compiled files to this directory:
+Move the compiled files to this directory:
 
 ```
-# mv ~your-user/fusionsuite-frontend/www /var/www/fusionsuite/frontend
+# mv ~your-user/fusionsuite-frontend/dist/en-US /var/www/fusionsuite/frontend
 ```
-
-Update the file `config.json` to point to the backend URL:
-
-???+ note "/var/www/fusionsuite/frontend/config.json"
-    ```json
-    {
-        "backendUrl": "http://fusionsuite-backend.example.com"
-    }
-    ```
 
 And don't forget to set the correct permissions on the files:
 
@@ -115,7 +107,7 @@ And don't forget to set the correct permissions on the files:
 ## Configure Nginx
 
 Edit the file `/etc/nginx/sites-available/fusionsuite.conf` by adapting the
-following example (especially the `server_name` directive):
+following example (especially the `server_name` and `proxy_pass` directives):
 
 ???+ note "/etc/nginx/sites-available/fusionsuite.conf"
     ```nginx
@@ -130,8 +122,25 @@ following example (especially the `server_name` directive):
       location / {
         try_files $uri $uri/ /index.html =404;
       }
+
+      location /api/ {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://fusionsuite-backend.example.com;
+      }
     }
     ```
+
+!!! info
+    Instead of proxifying `/api`, it is possible to tell the frontend to call
+    the backend directly. Create a `src/config.json` file:
+
+    ```console
+    # cp ~your-user/fusionsuite-frontend/src/config.sample.json /var/www/fusionsuite/frontend/config.json
+    # chown www-data:www-data /var/www/fusionsuite/frontend/config.json
+    ```
+
+    And adapt the `backendUrl` value.
 
 !!! tip
     If you already have a block for the backend, you can put this one before or
