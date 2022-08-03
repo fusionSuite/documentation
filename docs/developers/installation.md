@@ -1,15 +1,8 @@
 # Installation of the development environment
 
-This document explains how to install your development environment. It has been
-made and tested for:
-
-- Debian 11 (Bullseye)
-- MariaDB
-- Nginx
-
-Other systems should work as well, but you may have to adapt some commands.
-
-FusionSuite also works and is tested with MySQL and PostgreSQL databases.
+This document explains how to install your development environment. It can be
+setup [with](#with-docker) or [without](#without-docker) Docker, depending on
+your preferences.
 
 !!! info
     This document uses the repositories of the [FusionSuite GitHub organization](https://github.com/fusionSuite).
@@ -22,7 +15,19 @@ FusionSuite also works and is tested with MySQL and PostgreSQL databases.
 - commands starting by `#` must be executed by the `root` user;
 - commands starting by `$` must be executed by your normal user.
 
-## Install the package dependencies
+## Without Docker
+
+This guide has been made and tested for:
+
+- Debian 11 (Bullseye)
+- MariaDB
+- Nginx
+
+Other systems should work as well, but you may have to adapt some commands.
+
+FusionSuite also works and is tested with MySQL and PostgreSQL databases.
+
+### Install the package dependencies
 
 Install the dependencies with the following command:
 
@@ -30,7 +35,7 @@ Install the dependencies with the following command:
 # apt install git curl composer php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server
 ```
 
-## Configure MariaDB
+### Configure MariaDB
 
 !!! warning
     Please note the instructions in this section don't secure the access to
@@ -53,7 +58,7 @@ GRANT ALL PRIVILEGES ON fusionsuite_development.* TO 'fusionsuite'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Install and configure the backend
+### Install and configure the backend
 
 Clone the backend repository at a location where you and the `www-data` user
 have access (e.g. `/var/www/fusionsuite`):
@@ -73,29 +78,30 @@ Then, in the `backend/` directory, install the composer dependencies:
 
 ```console
 $ cd /var/www/fusionsuite/backend
-$ composer install
+$ make install
 ```
 
-Create an environment configuration file for development:
+Setup your system (i.e. create a configuration file and initialize your
+database):
 
 ```console
-$ ./bin/cli env:create -c \
-    -n development \
-    -t MariaDB \
-    -H localhost \
-    -d fusionsuite_development \
-    -u fusionsuite \
-    -p fusionsuite \
-    -P 3306
+$ make setup
 ```
 
-Finally, setup the database:
+This command accepts few parameters, for instance (these are the default
+values):
 
-```console
-$ ./bin/cli install
+```
+$ make setup ENV_NAME=development \
+    DB_TYPE=MariaDB \
+    DB_HOST=localhost \
+    DB_NAME=fusionsuite_development \
+    DB_USER=fusionsuite \
+    DB_PASS=fusionsuite \
+    DB_PORT=3306
 ```
 
-## Configure Nginx
+### Configure Nginx
 
 You now have to configure Nginx to serve the backend. Create a new file named
 `/etc/nginx/sites-available/fusionsuite.conf`:
@@ -150,7 +156,7 @@ If it’s correct, it will return the following Json:
 {"connections":{"database":true}}
 ```
 
-## Install and configure the frontend
+### Install and configure the frontend
 
 Clone the frontend repository next to the backend repository:
 
@@ -205,3 +211,120 @@ When it's ready, the frontend should be accessible at [localhost:4200](http://lo
 
 If everything is fine, you should see a login form. The default credentials
 are: `admin` / `admin`.
+
+## With Docker
+
+If you prefer to setup your environment with Docker, please make sure to
+[install Docker Engine](https://docs.docker.com/engine/install/) and [Docker
+Compose](https://docs.docker.com/compose/install/). Both `docker` and
+`docker-compose` must be executable by your normal user.
+
+!!! warning
+    If you're not used to Docker, we recommend you to install FusionSuite [the
+    non-Docker way](#without-docker): the setup may look simpler, but Docker
+    comes with its own difficulties.
+
+### Setup the backend
+
+Clone the backend repository:
+
+```console
+$ git clone https://github.com/fusionSuite/backend.git
+$ cd backend
+```
+
+Install the dependencies with:
+
+```console
+$ make install DOCKER=true
+```
+
+!!! info
+    This first command builds the Docker image for PHP, and so it can take
+    some time to finish. Don't worry: once done, the image don't need to be
+    rebuilt.
+
+!!! tip
+    You can declare the `DOCKER` environment variable in your e.g. `.bashrc`
+    file to not have to pass it to each command.
+
+Start the Docker containers with:
+
+```console
+$ make docker-start
+```
+
+!!! info
+    This second command downloads the images for MariaDB and Nginx, which can
+    also be long.
+
+In a different console, setup your system with:
+
+```console
+$ make setup DOCKER=true
+```
+
+The backend should now be accessible at [localhost:8000](http://localhost:8000).
+
+You can check the database is correctly configured at [localhost:8000/v1/status](http://localhost:8000/v1/status).
+If it’s correct, it will return the following Json:
+
+```json
+{"connections":{"database":true}}
+```
+
+### Setup the frontend
+
+Clone the frontend repository:
+
+```console
+$ git clone https://github.com/fusionSuite/frontend.git
+$ cd frontend
+```
+
+Install the dependencies with:
+
+```console
+$ make install DOCKER=true
+```
+
+!!! info
+    This command builds the Docker image for NodeJs. Same as before: it might
+    be long, but it's only the first time.
+
+Start the Docker container with:
+
+```console
+$ make docker-start
+```
+
+When it's ready, the frontend should be accessible at [localhost:4200](http://localhost:4200).
+
+If everything is fine, you should see a login form. The default credentials
+are: `admin` / `admin`.
+
+### Work in the Docker containers
+
+In a Docker environment, you can't execute the commands directly (e.g. `php`,
+`mariadb`, `npm`…): you need to run them _in_ the containers.
+
+Hopefully, we provide some commands wrappers to facilitate your life. You'll
+find them under the `docker/bin` folders. You can use them as you would use the
+normal commands.
+
+Backend repository:
+
+```console
+$ ./docker/bin/php
+$ ./docker/bin/cli
+$ ./docker/bin/composer
+$ ./docker/bin/mariadb
+```
+
+Frontend repository:
+
+```console
+$ ./docker/bin/ng
+$ ./docker/bin/npm
+$ ./docker/bin/yarn
+```
