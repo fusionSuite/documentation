@@ -1,36 +1,31 @@
+# FusionSuite Documentation
 
+This is the repository for the documentation of FusionSuite. It uses [MkDocs](https://www.mkdocs.org/).
 
-Find the documentation [here](https://fusionsuite.org/documentation/)  
+This document is intended to people who want to contribute to the
+documentation. For more information, please see [the official links](#official-links).
 
-## Run mkdocs in dev mode
+## Quick start
 
-Install virtualenv:
+Make sure to have Python 3.3+ installed on your system.
+
+Install the dependencies with:
+
 ```console
-apt install virtualenv
+$ make install
 ```
 
-Clone the repository:
+And start the development server:
+
 ```console
-git clone https://github.com/fusionSuite/documentation.git
-cd documentation
+$ make start
 ```
 
-Create a virtual environment:
-```console
-virtualenv venv
-```
+## Official links
 
-Activate your virtual environment:
-```console
-source venv/bin/activate
-```
-
-Install requirement for mkdocs
-```console
-pip install -r requirements.txt
-```
-
-Run development instance:
-```console
-mkdocs serve
-```
+- website: [fusionsuite.org](https://fusionsuite.org) ([code](https://github.com/fusionSuite/fusionsuite.org))
+- documentation: [fusionsuite.org/documentation](https://fusionsuite.org/documentation/) ([code](https://github.com/fusionSuite/documentation))
+- community: [Discord](https://discord.gg/Kj72FwAKTC)
+- bugtracker: [github.com/FusionSuite/FusionSuite](https://github.com/fusionSuite/FusionSuite)
+- backend code: [github.com/FusionSuite/backend](https://github.com/fusionSuite/backend)
+- frontend code: [github.com/FusionSuite/frontend](https://github.com/fusionSuite/frontend)
