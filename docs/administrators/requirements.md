@@ -3,7 +3,7 @@
 ## Backend requirements
 
 * a webserver (e.g. Nginx, Apache)
-* PHP >= 7.4
+* PHP >= 8.0
 * PHP extensions:
     * DOM
     * PDO\_MYSQL (if you use MySQL or MariaDB)

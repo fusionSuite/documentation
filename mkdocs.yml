@@ -6,6 +6,22 @@ repo_url: 'https://github.com/fusionSuite/documentation'
 
 copyright: Copyright © FusionSuite 2022
 
+nav:
+  - Home: index.md
+  - End-user guide: 
+    - End-user guide/introduction.md
+  - Administrator: 
+    - administrators/index.md
+    - administrators/cli_usage.md
+    - administrators/requirements.md
+    - Installation:
+      - administrators/installation/backend.md
+      - administrators/installation/frontend.md
+  - Developers: 
+    - developers/index.md
+    - installation: developers/installation.md
+    - tests: developers/tests.md
+
 markdown_extensions:
   - toc:
       permalink: true
@@ -48,6 +64,9 @@ theme:
   name: material
   features:
     - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
     - content.code.annotate # (1)
   logo: assets/favicon.png
   favicon: assets/favicon.png

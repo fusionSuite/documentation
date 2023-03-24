@@ -22,3 +22,7 @@ h1 {
     border-bottom: none;
     cursor: default;
 }
+
+.md-nav__link {
+    color: black !important;
+}

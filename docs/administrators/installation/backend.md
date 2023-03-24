@@ -20,7 +20,7 @@ FusionSuite also works and is tested with MySQL and PostgreSQL databases.
 Install the dependencies with the following command:
 
 ```console
-# apt install curl composer php7.4-fpm php7.4-mysql php7.4-xml nginx mariadb-server
+# apt install curl composer php8.0-fpm php8.0-mysql php8.0-xml nginx mariadb-server
 ```
 
 If you want to install FusionSuite with Git (recommended method), you should
@@ -152,7 +152,7 @@ adapting the following example (especially the `server_name` directive):
       location / {
         fastcgi_param   SCRIPT_FILENAME $document_root/index.php$fastcgi_script_name;
         include         fastcgi_params;
-        fastcgi_pass    unix:/run/php/php7.4-fpm.sock;
+        fastcgi_pass    unix:/run/php/php8.0-fpm.sock;
 
         add_header      Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header      X-Frame-Options "SAMEORIGIN";
