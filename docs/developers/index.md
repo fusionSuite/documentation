@@ -7,7 +7,7 @@ FusionSuite code is separated in two repositories:
 - [github.com/fusionSuite/backend](https://github.com/fusionSuite/backend)
 - [github.com/fusionSuite/frontend](https://github.com/fusionSuite/frontend)
 
-The backend is written in PHP (>= 7.4). It uses the micro-framework [Slim](https://www.slimframework.com/)
+The backend is written in PHP (>= 8.0). It uses the micro-framework [Slim](https://www.slimframework.com/)
 and the [Eloquent](https://laravel.com/docs/9.x/eloquent) ORM. The backend
 provides a REST API which is used by the frontend.
 
