@@ -8,6 +8,8 @@
     * DOM
     * PDO\_MYSQL (if you use MySQL or MariaDB)
     * PDO\_PGSQL (if you use PostgreSQL)
+    * mbstring
+    * filter
 * one of the following database:
 
   | Database       | Supported versions         |
