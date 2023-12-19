@@ -8,7 +8,7 @@ This documentation has been made and tested for:
 
 Other systems should work as well, but you may have to adapt some commands.
 
-FusionSuite also works and is tested with MySQL and PostgreSQL databases.
+FusionSuite also works and is tested with MariaDB and PostgreSQL databases.
 
 ## Conventions used in this document
 

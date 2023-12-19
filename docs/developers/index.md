@@ -11,7 +11,7 @@ The backend is written in PHP (>= 8.1). It uses the micro-framework [Slim](https
 and the [Eloquent](https://laravel.com/docs/9.x/eloquent) ORM. The backend
 provides a REST API which is used by the frontend.
 
-Three databases are supported by the backend: MySQL, MariaDB and PostgreSQL.
+Three databases are supported by the backend: MariaDB and PostgreSQL.
 
 The frontend is written in TypeScript. It uses the framework [Angular](https://angular.io/).
 
