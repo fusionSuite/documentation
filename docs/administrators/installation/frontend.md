@@ -95,7 +95,7 @@ In case you did not create this directory for the backend yet, create it now:
 Move the compiled files to this directory:
 
 ```
-# mv ~your-user/fusionsuite-frontend/dist/en-US /var/www/fusionsuite/frontend
+# mv ~your-user/fusionsuite-frontend/dist/frontend/en-US /var/www/fusionsuite/frontend
 ```
 
 And don't forget to set the correct permissions on the files:
